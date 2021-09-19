@@ -1,4 +1,9 @@
 import math as m
+def g(n):
+        if n==int(n):
+            return 0
+        n=str(n)
+        return len(n)-n.find('.')-1
 class frac(object):
     def __init__(frac,a,b):
         if(b==0):
@@ -7,15 +12,8 @@ class frac(object):
             frac.a=0
             frac.b=1
             return None
-        s=0
-        while(a!=int(a)):
-            s+=1
-            a*=10
-        b=b*10**s
-        while(b!=int(b)):
-            s+=1
-            a*=10
-            b*=10
+        s=max(g(a),g(b))
+        a,b=a*10**s,b*10**s
         s=m.gcd(int(a),int(b))
         a/=s
         b/=s
@@ -46,7 +44,7 @@ class fr(object):
             a-=1
             b+=c
         fr.a,fr.b,fr.c=a,b,c
-    def __str__(fr):
+    def __repr__(fr):
         if fr.b==0:
             return str(fr.a)
         if(fr.a==0):
