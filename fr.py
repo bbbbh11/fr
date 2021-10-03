@@ -1,3 +1,4 @@
+#修复了一些问题
 import math as m
 def g(n):
         if n==int(n):
@@ -27,16 +28,28 @@ class frac(object):
     def __repr__(frac):
         return('%d/%d'%(frac.a,frac.b))
 class fr(object):
-    def __init__(fr,a,b,c):
+    def __init__(fr,a,b,c,isint=0):
         #fr(a,b,c)表示a+b/c,一般地,程序会自动化简
         #目前，我们支持取绝对值，四则运算，取余，转化为浮点数或整数，比较运算
-        a的整数部分=int(a)
-        a=frac(a-a的整数部分,1)
-        a+=frac(b,c)
-        s=int(a.a/a.b)
-        a的整数部分+=s
-        a.a-=s*a.b
-        a,b,c=a的整数部分,a.a,a.b
+        if(isint):
+            if(c<0):
+                b=-b
+                c=-c
+            s=b//c
+            a=a+s
+            b=b-s*c
+            c=c
+            s=m.gcd(int(b),int(c))
+            b,c=b//s,c//s
+        else:
+            a的整数部分=int(a)
+            a=frac(a,1)
+            a.a-=a.b*a的整数部分
+            a+=frac(b,c)
+            s=int(a.a/a.b)
+            a的整数部分+=s
+            a.a-=s*a.b
+            a,b,c=a的整数部分,a.a,a.b
         if(a<0 and b>0):
             a+=1
             b-=c
@@ -51,13 +64,13 @@ class fr(object):
             return "%d/%d"%(fr.b,fr.c)
         if(fr.a>0):
             return("%d+%d/%d"%(fr.a,fr.b,fr.c))
-        return('%d%d/%d',fr.a,fr.b,fr.c)
+        return('%d%d/%d'%(fr.a,fr.b,fr.c))
     def __add__(fr1,fr2):
         if(type(fr1)!=fr):
             fr1=fr(0,fr1,1)
         if(type(fr2)!=fr):
             fr2=fr(0,fr2,1)
-        return(fr(fr1.a+fr2.a,fr1.b*fr2.c+fr1.c*fr2.b,fr1.c*fr2.c))
+        return(fr(fr1.a+fr2.a,fr1.b*fr2.c+fr1.c*fr2.b,fr1.c*fr2.c,1))
     def __eq__(fr1,fr2):
         if(type(fr1)!=fr):
             fr1=fr(0,fr1,1)
@@ -119,37 +132,20 @@ class fr(object):
             fr1=fr(0,fr1,1)
         if(type(fr2)!=fr):
             fr2=fr(0,fr2,1)
-        return(fr(fr1.a-fr2.a,fr1.b*fr2.c-fr2.b*fr1.c,fr1.c*fr2.c))
+        return(fr(fr1.a-fr2.a,fr1.b*fr2.c-fr2.b*fr1.c,fr1.c*fr2.c,1))
     def __mul__(fr1,fr2):
         if(type(fr1)!=fr):
             fr1=fr(0,fr1,1)
         if(type(fr2)!=fr):
             fr2=fr(0,fr2,1)
-        return(fr(fr1.a*fr2.b,fr2.b*fr1.c*(fr1.a+1)+fr1.b*fr2.c*(fr2.a+1),fr1.c*fr2.c))
+        return(fr(fr1.a*fr2.b,fr2.b*fr1.c*(fr1.a+1)+fr1.b*fr2.c*(fr2.a+1),fr1.c*fr2.c,1))
     def __truediv__(fr1,fr2):
         if(type(fr1)!=fr):
             fr1=fr(0,fr1,1)
         if(type(fr2)!=fr):
             fr2=fr(0,fr2,1)
-        return fr(0,fr2.c*(fr1.a*fr1.c+fr1.b),fr1.c*(fr2.a*fr2.c+fr2.b))
+        return fr(0,fr2.c*(fr1.a*fr1.c+fr1.b),fr1.c*(fr2.a*fr2.c+fr2.b,1))
     def __floordiv__(fr1,fr2):
         return(int(fr1/fr2))
     def __mod__(fr1,fr2):
         return(fr1-fr2*int(fr1/fr2))
-#这里提供一个将其他类型的数转化为fr类的方法:)
-def tofr(n) -> any:
-    s=type(n)
-    if(s==str):
-        try:
-            n=float(n)
-        except:
-            def lf(m):
-                if(m!=''):
-                    return float(m)
-                return 0
-            n=n.split('+')
-            n[1]=n[1].split('/')
-            return fr(lf(n[0]),lf(n[1][0]),lf(n[1][1]))
-    if s==fr:
-        return n
-    return fr(0,n,1)
